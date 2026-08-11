@@ -9,12 +9,10 @@ const weatherList = ref([
 
 const searchQuery = ref('')
 const statusMessage = ref('카드를 클릭하거나 검색해 보세요.')
+const selectedWeatherId = ref('')
 
 const bindQuery = (event) => {
   searchQuery.value = event.target.value
-}
-const handleStatusBar = (cityName) => {
-  statusMessage.value = `${cityName}이 선택되었습니다.`
 }
 const showDetail = (cityName, status) => {
   alert(`${cityName}의 현재 날씨는 [${status}] 상태입니다.`)
@@ -26,6 +24,15 @@ const filteredWeatherList = computed(() => {
   }
 
   return weatherList.value.filter((weather) => weather.name.includes(query))
+})
+const selectedWeather = computed(() =>
+  weatherList.value.find((weather) => weather.id === selectedWeatherId.value),
+)
+
+watch(selectedWeather, (weather) => {
+  if (weather) {
+    statusMessage.value = `${weather.name}이 선택되었습니다.`
+  }
 })
 watch(statusMessage, (newValue) => {
   console.log(`🤖 [watch 감지] 상태 바 문구가 업데이트되었습니다 -> ${newValue}이 선택되었습니다.`)
@@ -57,7 +64,7 @@ watchEffect(() => {
         class="weather-card"
         v-for="weather in filteredWeatherList"
         :key="weather.id"
-        @click="handleStatusBar(weather.name)"
+        @click="selectedWeatherId = weather.id"
       >
         <p>{{ weather.name }} ({{ weather.status }})</p>
         <p>현재 기온: {{ weather.temp }}°C</p>
@@ -67,7 +74,9 @@ watchEffect(() => {
           상세보기
         </button>
       </div>
-      <p v-if="filteredWeatherList.length === 0">검색 결과와 일치하는 도시가 없습니다.</p>
+      <p style="color: red" v-if="filteredWeatherList.length === 0">
+        검색 결과와 일치하는 도시가 없습니다.
+      </p>
     </section>
 
     <section class="status-bar">
