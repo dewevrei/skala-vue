@@ -2,7 +2,7 @@
 import { ref, computed, watch, watchEffect } from 'vue'
 import BaseDashboardCard from './BaseDashboardCard.vue'
 import SearchBar from './SearchBar.vue'
-import WeatherCard from './WeatherCard.vue'
+import WeatherList from './WeatherList.vue'
 
 const weatherList = ref([
   { id: 'city_01', name: '서울', temp: 28, status: '맑음' },
@@ -50,20 +50,11 @@ watchEffect(() => {
       <SearchBar :current-query="searchQuery" @update-query="(val) => (searchQuery = val)" />
     </BaseDashboardCard>
     <BaseDashboardCard>
-      <p>지역별 날씨 현황</p>
-      <WeatherCard
-        v-for="item in filteredWeatherList"
-        :key="item.id"
-        :city-item="item"
+      <WeatherList
+        :items="filteredWeatherList"
         @select-card="(id) => (selectedWeatherId = id)"
         @click-detail="showDetail"
       />
-      <p
-        v-if="filteredWeatherList.length === 0"
-        style="text-align: center; color: #e74c3c; padding: 10px 0"
-      >
-        검색 결과와 일치하는 도시가 없습니다.
-      </p>
     </BaseDashboardCard>
     <div class="status-bar">{{ statusMessage }}</div>
   </main>
