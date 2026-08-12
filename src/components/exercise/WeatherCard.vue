@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useConfigStore } from '@/stores/configStore'
+import { useFavoriteStore } from '@/stores/favoriteStore'
 
 const props = defineProps({
   cityItem: { type: Object, required: true },
@@ -9,6 +10,7 @@ const props = defineProps({
 const emit = defineEmits(['select-card', 'click-detail'])
 
 const configStore = useConfigStore()
+const favoriteStore = useFavoriteStore()
 // 스토어의 상태값이 fahrenheit일 때만 화씨 공식 적용 연산
 const displayTemp = computed(() => {
   const rawTemp = props.cityItem.temp
@@ -28,6 +30,9 @@ const displayTemp = computed(() => {
     <span class="badge cool" v-else>❄️ 선선함 (25도 미만)</span>
     <button class="btn-detail" @click.stop="emit('click-detail', cityItem.name, cityItem.status)">
       상세보기
+    </button>
+    <button class="btn-favorite" @click.stop="favoriteStore.toggleFavorite(cityItem)">
+      {{ favoriteStore.isFavorite(cityItem.id) ? '즐겨찾기 해제' : '즐겨찾기' }}
     </button>
   </section>
 </template>
@@ -59,6 +64,13 @@ const displayTemp = computed(() => {
   position: absolute;
   right: 12px;
   top: 15px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.btn-favorite {
+  position: absolute;
+  top: 52px;
+  right: 12px;
   padding: 6px 10px;
   cursor: pointer;
 }
