@@ -32,6 +32,8 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
       <nav class="navigation-bar">
         <RouterLink to="/" class="nav-item"> 날씨 대시보드</RouterLink>
         <span class="divider">|</span>
+        <RouterLink to="/favorites" class="nav-item"> 즐겨찾기</RouterLink>
+        <span class="divider">|</span>
         <RouterLink to="/about" class="nav-item"> 서비스 소개</RouterLink>
       </nav>
       <main>
@@ -44,6 +46,8 @@ import UnitToggler from './components/exercise/UnitToggler.vue'
       <div class="dashboard-wrapper">
         <nav class="navigation-bar">
           <RouterLink to="/" class="nav-item"> 날씨 대시보드</RouterLink>
+          <span class="divider">|</span>
+          <RouterLink to="/favorites" class="nav-item"> 즐겨찾기</RouterLink>
           <span class="divider">|</span>
           <RouterLink to="/about" class="nav-item"> 서비스 소개</RouterLink>
           <UnitToggler />

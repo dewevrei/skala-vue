@@ -53,9 +53,11 @@ onMounted(() => {
 })
 
 watch(searchQuery, (newQuery) => {
+  const normalizedQuery = newQuery.trim()
+
   router.push({
     path: route.path,
-    query: { search: newQuery || undefined },
+    query: { search: normalizedQuery || undefined },
   })
 })
 

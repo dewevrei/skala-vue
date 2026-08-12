@@ -13,6 +13,11 @@ const routes = [
     component: () => import('../views/WeatherAboutView.vue'),
   },
   {
+    path: '/favorites',
+    name: 'WeatherFavorite',
+    component: () => import('../views/WeatherFavoriteView.vue'),
+  },
+  {
     path: '/weather/:cityId',
     name: 'WeatherDetail',
     component: () => import('../views/WeatherDetailView.vue'),
