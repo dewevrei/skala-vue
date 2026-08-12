@@ -33,6 +33,12 @@ import WatchersReactive from './components/practices/composition/WatchersReactiv
 import WatchersReactiveArray from './components/practices/composition/WatchersReactiveArray.vue'
 import WatchersRefArray from './components/practices/composition/WatchersRefArray.vue'
 import WatchersWatchEffect from './components/practices/composition/WatchersWatchEffect.vue'
+import LifecycleParent from './components/practices/component/LifecycleParent.vue'
+import PropsEmitsParent from './components/practices/component/PropsEmitsParent.vue'
+import SlotDefaultParent from './components/practices/component/SlotDefaultParent.vue'
+import SlotNamedParent from './components/practices/component/SlotNamedParent.vue'
+import SlotScopedParent from './components/practices/component/SlotScopedParent.vue'
+import StoreCounter from './components/practices/library/StoreCounter.vue'
 </script>
 
 <template>
@@ -70,6 +76,12 @@ import WatchersWatchEffect from './components/practices/composition/WatchersWatc
     <WatchersReactiveArray />
     <WatchersRefArray />
     <WatchersWatchEffect />
+    <LifecycleParent />
+    <PropsEmitsParent />
+    <SlotDefaultParent />
+    <SlotNamedParent />
+    <SlotScopedParent />
+    <StoreCounter />
   </div>
 </template>
 
