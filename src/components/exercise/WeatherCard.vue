@@ -26,7 +26,20 @@ const displayTemp = computed(() => {
     <div class="weather-content">
       <div class="weather-summary">
         <div>
-          <h3 class="city-name">{{ cityItem.name }}</h3>
+          <h3 class="city-name">
+            <svg
+              v-if="cityItem.isCurrentLocation"
+              class="current-location-icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <polygon points="3 11 22 2 13 21 11 13 3 11" />
+            </svg>
+            {{ cityItem.name }}
+          </h3>
+          <p v-if="cityItem.isCurrentLocation && cityItem.locationName" class="location-name">
+            {{ cityItem.locationName }}
+          </p>
           <div class="weather-condition">
             <img
               v-if="cityItem.icon"
@@ -56,6 +69,7 @@ const displayTemp = computed(() => {
             상세보기
           </el-button>
           <el-button
+            v-if="!cityItem.isCurrentLocation"
             type="warning"
             size="small"
             :plain="!favoriteStore.isFavorite(cityItem.id)"
@@ -109,8 +123,24 @@ const displayTemp = computed(() => {
 }
 
 .city-name {
+  display: flex;
+  align-items: center;
   color: #303133;
   font-size: 18px;
+}
+
+.current-location-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  color: var(--el-color-primary);
+  fill: currentColor;
+}
+
+.location-name {
+  margin: 4px 0 0;
+  color: #606266;
+  font-size: 13px;
 }
 
 .weather-status {

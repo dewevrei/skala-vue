@@ -190,22 +190,34 @@ const fetchWithoutCoordinates = async (targetCity) => {
 // 상세 화면 진입 시 도시와 좌표를 확인하고 적절한 조회 방식으로 데이터를 불러온다.
 onMounted(async () => {
   const id = route.params.cityId
-  const targetCity = cityMapping[id]
+  const lat = parseCoordinate(route.query.lat)
+  const lon = parseCoordinate(route.query.lon)
+  const isCurrentLocation = id === 'current_location'
 
-  if (targetCity) {
-    isLoading.value = true
-    try {
-      const lat = parseCoordinate(route.query.lat)
-      const lon = parseCoordinate(route.query.lon)
+  const targetCity = isCurrentLocation
+    ? { english: '', korean: '나의 위치' }
+    : cityMapping[id]
 
-      if (lat !== null && lon !== null) {
-        await fetchByCoordinates(lat, lon, targetCity)
-      } else {
-        await fetchWithoutCoordinates(targetCity)
-      }
-    } finally {
-      isLoading.value = false
+  if (!targetCity) {
+    weatherErrorMessage.value = '지원하지 않는 지역입니다.'
+    return
+  }
+
+  if (isCurrentLocation && (lat === null || lon === null)) {
+    weatherErrorMessage.value = '현재 위치 좌표를 확인할 수 없습니다.'
+    return
+  }
+
+  isLoading.value = true
+
+  try {
+    if (lat !== null && lon !== null) {
+      await fetchByCoordinates(lat, lon, targetCity)
+    } else {
+      await fetchWithoutCoordinates(targetCity)
     }
+  } finally {
+    isLoading.value = false
   }
 })
 

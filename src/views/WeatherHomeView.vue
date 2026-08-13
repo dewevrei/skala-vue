@@ -15,8 +15,20 @@ const searchQuery = ref('')
 const statusMessage = ref('카드를 클릭하거나 검색해 보세요.')
 const selectedWeatherId = ref('')
 const isLoading = ref(false)
+const currentLocationWeather = ref(null)
+const isLocationLoading = ref(false)
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
+
+// 브라우저의 콜백 기반 위치 조회를 async/await으로 사용할 수 있게 변환한다.
+const getCurrentPosition = () =>
+  new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: false,
+      timeout: 10000,
+      maximumAge: 600000,
+    })
+  })
 
 // 주요 도시의 현재 날씨를 동시에 조회해 홈 화면의 날씨 목록을 만든다.
 const fetchRealTimeWeather = async () => {
@@ -86,11 +98,77 @@ const fetchRealTimeWeather = async () => {
   }
 }
 
-// 입력한 검색어가 포함된 도시만 보여 주며, 검색어가 없으면 전체 목록을 반환한다.
+// 현재 위치를 기존 주요 도시 목록의 최상단에 합친다.
+const allWeatherList = computed(() => {
+  if (!currentLocationWeather.value) {
+    return weatherList.value
+  }
+
+  return [currentLocationWeather.value, ...weatherList.value]
+})
+
+// 브라우저에서 현재 좌표를 얻은 뒤 해당 좌표의 현재 날씨를 조회한다.
+const fetchCurrentLocationWeather = async () => {
+  if (!('geolocation' in navigator)) {
+    currentLocationWeather.value = null
+    return
+  }
+
+  isLocationLoading.value = true
+
+  try {
+    let position
+
+    try {
+      position = await getCurrentPosition()
+    } catch (error) {
+      currentLocationWeather.value = null
+      console.error('브라우저 현재 위치 조회 실패:', error)
+      return
+    }
+
+    const { latitude, longitude } = position.coords
+    let response
+
+    try {
+      response = await axios.get(BASE_URL, {
+        params: {
+          lat: latitude,
+          lon: longitude,
+          appid: API_KEY,
+          units: 'metric',
+          lang: 'kr',
+        },
+      })
+    } catch (error) {
+      currentLocationWeather.value = null
+      console.error('OpenWeather 현재 위치 날씨 요청 실패:', error)
+      return
+    }
+
+    const raw = response.data
+
+    currentLocationWeather.value = {
+      id: 'current_location',
+      name: '나의 위치',
+      locationName: raw.name || '현재 위치',
+      temp: raw.main.temp,
+      status: raw.weather[0].description,
+      icon: raw.weather[0].icon,
+      lat: latitude,
+      lon: longitude,
+      isCurrentLocation: true,
+    }
+  } finally {
+    isLocationLoading.value = false
+  }
+}
+
+// 검색어가 없으면 현재 위치를 포함하고, 검색 중에는 기존 고정 도시만 필터링한다.
 const filteredWeatherList = computed(() => {
   const query = searchQuery.value.trim()
   if (!query) {
-    return weatherList.value
+    return allWeatherList.value
   }
 
   return weatherList.value.filter((weather) => weather.name.includes(query))
@@ -98,7 +176,7 @@ const filteredWeatherList = computed(() => {
 
 // 선택된 카드의 id와 일치하는 도시 날씨 객체를 찾아 반환한다.
 const selectedWeather = computed(() =>
-  weatherList.value.find((weather) => weather.id === selectedWeatherId.value),
+  allWeatherList.value.find((weather) => weather.id === selectedWeatherId.value),
 )
 
 // 선택된 도시가 바뀌면 하단 상태 메시지를 해당 도시명으로 갱신한다.
@@ -120,12 +198,13 @@ watchEffect(() => {
   )
 })
 
-// 초기 마운트 시 URL의 검색어를 복원하고 주요 도시 날씨를 조회한다.
+// 초기 마운트 시 주요 도시 날씨와 현재 위치 날씨 조회를 독립적으로 시작한다.
 onMounted(() => {
   if (route.query.search) {
     searchQuery.value = route.query.search
   }
   fetchRealTimeWeather()
+  fetchCurrentLocationWeather()
 })
 
 // 검색어가 바뀌면 새로고침 후에도 유지되도록 URL의 search 쿼리를 동기화한다.
@@ -175,7 +254,12 @@ const handleDetailJump = (weather) => {
       v-loading="isLoading"
       element-loading-text="실시간 기상 데이터를 불러오는 중입니다..."
     >
-      <h3 class="list-title">지역별 날씨 현황</h3>
+      <div class="list-heading">
+        <h3 class="list-title">지역별 날씨 현황</h3>
+        <el-tag v-if="isLocationLoading" type="info" effect="plain" round>
+          현재 위치 확인 중...
+        </el-tag>
+      </div>
       <template v-if="!isLoading">
         <el-empty
           v-if="filteredWeatherList.length === 0"
@@ -198,8 +282,16 @@ const handleDetailJump = (weather) => {
 </template>
 
 <style scoped>
+.list-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .list-title {
-  margin: 0 0 16px;
+  margin: 0;
   color: #303133;
   font-size: 17px;
 }

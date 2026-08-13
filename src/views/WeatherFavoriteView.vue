@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
@@ -7,6 +8,10 @@ import { useFavoriteStore } from '@/stores/favoriteStore'
 
 const router = useRouter()
 const favoriteStore = useFavoriteStore()
+
+onMounted(() => {
+  favoriteStore.refreshFavoriteWeather()
+})
 
 const handleDetailJump = (cityId) => {
   router.push(`/weather/${cityId}`)
@@ -18,7 +23,18 @@ const handleDetailJump = (cityId) => {
     <h3>즐겨찾기</h3>
     <hr />
 
-    <BaseDashboardCard>
+    <BaseDashboardCard
+      v-loading="favoriteStore.isRefreshing"
+      element-loading-text="즐겨찾기 날씨를 갱신하는 중입니다..."
+    >
+      <el-alert
+        v-if="favoriteStore.refreshErrorMessage"
+        class="refresh-alert"
+        :title="favoriteStore.refreshErrorMessage"
+        type="warning"
+        show-icon
+        :closable="false"
+      />
       <el-empty
         v-if="favoriteStore.favorites.length === 0"
         :image-size="90"
@@ -35,3 +51,9 @@ const handleDetailJump = (cityId) => {
     </BaseDashboardCard>
   </div>
 </template>
+
+<style scoped>
+.refresh-alert {
+  margin-bottom: 16px;
+}
+</style>
