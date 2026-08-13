@@ -39,6 +39,8 @@ import SlotDefaultParent from './components/practices/component/SlotDefaultParen
 import SlotNamedParent from './components/practices/component/SlotNamedParent.vue'
 import SlotScopedParent from './components/practices/component/SlotScopedParent.vue'
 import StoreCounter from './components/practices/library/StoreCounter.vue'
+import AxiosJson from './components/practices/library/AxiosJson.vue'
+import AxiosWeather from './components/practices/library/AxiosWeather.vue'
 </script>
 
 <template>
@@ -82,6 +84,8 @@ import StoreCounter from './components/practices/library/StoreCounter.vue'
     <SlotNamedParent />
     <SlotScopedParent />
     <StoreCounter />
+    <AxiosJson />
+    <AxiosWeather />
   </div>
 </template>
 
