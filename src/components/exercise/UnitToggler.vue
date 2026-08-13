@@ -3,30 +3,29 @@ import { useConfigStore } from '@/stores/configStore'
 const configStore = useConfigStore()
 </script>
 <template>
-  <div
-    style="
-      text-align: center;
-      margin-left: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    "
-  >
-    <span
-      >날씨단위:
-      <strong>{{ configStore.unit === 'celsius' ? '섭씨(℃)' : '화씨(℉)' }}</strong>
-    </span>
-    <button @click="configStore.toggleUnit" class="toggle-btn">단위변경</button>
+  <div class="unit-toggler">
+    <span class="unit-label">날씨 단위</span>
+    <el-switch
+      :model-value="configStore.unit === 'fahrenheit'"
+      active-text="화씨(℉)"
+      inactive-text="섭씨(℃)"
+      @change="configStore.toggleUnit"
+    />
   </div>
 </template>
+
 <style scoped>
-.toggle-btn {
-  padding: 6px 10px;
-  background-color: #4b6584;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
+.unit-toggler {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.unit-label {
+  color: #606266;
+  font-size: 14px;
+  font-weight: 700;
 }
 </style>

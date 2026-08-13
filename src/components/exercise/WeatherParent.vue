@@ -1,13 +1,14 @@
 <script setup>
 import { ref, computed, watch, watchEffect } from 'vue'
+import { ElMessageBox } from 'element-plus'
 import BaseDashboardCard from './BaseDashboardCard.vue'
 import SearchBar from './SearchBar.vue'
 import WeatherList from './WeatherList.vue'
 
 const weatherList = ref([
-  { id: 'city_01', name: '서울', temp: 28, status: '맑음' },
-  { id: 'city_02', name: '수원', temp: 24, status: '비' },
-  { id: 'city_03', name: '부산', temp: 26, status: '구름' },
+  { id: 'city_01', name: '서울', temp: 28, status: '맑음', icon: '01d' },
+  { id: 'city_02', name: '수원', temp: 24, status: '비', icon: '10d' },
+  { id: 'city_03', name: '부산', temp: 26, status: '구름', icon: '03d' },
 ])
 
 const searchQuery = ref('')
@@ -15,7 +16,10 @@ const statusMessage = ref('카드를 클릭하거나 검색해 보세요.')
 const selectedWeatherId = ref('')
 
 const showDetail = (cityName, status) => {
-  alert(`${cityName}의 현재 날씨는 [${status}] 상태입니다.`)
+  ElMessageBox.alert(`${cityName}의 현재 날씨는 [${status}] 상태입니다.`, '날씨 상세', {
+    confirmButtonText: '확인',
+    type: 'info',
+  })
 }
 const filteredWeatherList = computed(() => {
   const query = searchQuery.value.trim()
@@ -56,17 +60,6 @@ watchEffect(() => {
         @click-detail="showDetail"
       />
     </BaseDashboardCard>
-    <div class="status-bar">{{ statusMessage }}</div>
+    <el-alert :title="statusMessage" type="success" show-icon :closable="false" />
   </main>
 </template>
-
-<style scoped>
-.status-bar {
-  background: #e8f5e9;
-  padding: 10px;
-  text-align: center;
-  color: #2e7d32;
-  font-weight: bold;
-  border-radius: 6px;
-}
-</style>

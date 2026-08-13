@@ -19,14 +19,19 @@ const handleDetailJump = (cityId) => {
     <hr />
 
     <BaseDashboardCard>
-      <WeatherCard
-        v-for="item in favoriteStore.favorites"
-        :key="item.id"
-        :city-item="item"
-        @click-detail="handleDetailJump(item.id)"
+      <el-empty
+        v-if="favoriteStore.favorites.length === 0"
+        :image-size="90"
+        description="즐겨찾기된 항목이 없습니다."
       />
-
-      <p v-if="favoriteStore.favorites.length === 0">즐겨찾기된 항목이 없습니다.</p>
+      <template v-else>
+        <WeatherCard
+          v-for="item in favoriteStore.favorites"
+          :key="item.id"
+          :city-item="item"
+          @click-detail="handleDetailJump(item.id)"
+        />
+      </template>
     </BaseDashboardCard>
   </div>
 </template>

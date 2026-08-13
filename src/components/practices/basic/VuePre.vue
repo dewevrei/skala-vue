@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 const message = ref('Hello Vue.js!')
-const inputPlaceHolder = ref('값을 입력해주세요')
 </script>
 
 <template>

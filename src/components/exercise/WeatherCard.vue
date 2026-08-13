@@ -22,56 +22,133 @@ const displayTemp = computed(() => {
 </script>
 
 <template>
-  <section class="weather-card" @click="emit('select-card', cityItem.id)">
-    <p>{{ cityItem.name }} {{ cityItem.status }}</p>
-    <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
+  <el-card class="weather-card" shadow="hover" @click="emit('select-card', cityItem.id)">
+    <div class="weather-content">
+      <div class="weather-summary">
+        <div>
+          <h3 class="city-name">{{ cityItem.name }}</h3>
+          <div class="weather-condition">
+            <img
+              v-if="cityItem.icon"
+              class="weather-icon"
+              :src="`https://openweathermap.org/img/wn/${cityItem.icon}@2x.png`"
+              alt=""
+              aria-hidden="true"
+            />
+            <p class="weather-status">({{ cityItem.status }})</p>
+          </div>
+        </div>
+        <strong class="temperature">{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
+      </div>
 
-    <span class="badge hot" v-if="cityItem.temp >= 25">🔥 더움 (25도 이상)</span>
-    <span class="badge cool" v-else>❄️ 선선함 (25도 미만)</span>
-    <button class="btn-detail" @click.stop="emit('click-detail', cityItem.name, cityItem.status)">
-      상세보기
-    </button>
-    <button class="btn-favorite" @click.stop="favoriteStore.toggleFavorite(cityItem)">
-      {{ favoriteStore.isFavorite(cityItem.id) ? '즐겨찾기 해제' : '즐겨찾기' }}
-    </button>
-  </section>
+      <div class="weather-footer">
+        <el-tag v-if="cityItem.temp >= 25" type="danger" effect="light" round>
+          🔥 더움 (25도 이상)
+        </el-tag>
+        <el-tag v-else type="primary" effect="light" round>❄️ 선선함 (25도 미만)</el-tag>
+
+        <div class="weather-actions">
+          <el-button
+            type="primary"
+            size="small"
+            @click.stop="emit('click-detail', cityItem.name, cityItem.status)"
+          >
+            상세보기
+          </el-button>
+          <el-button
+            type="warning"
+            size="small"
+            :plain="!favoriteStore.isFavorite(cityItem.id)"
+            @click.stop="favoriteStore.toggleFavorite(cityItem)"
+          >
+            {{ favoriteStore.isFavorite(cityItem.id) ? '즐겨찾기 해제' : '즐겨찾기' }}
+          </el-button>
+        </div>
+      </div>
+    </div>
+  </el-card>
 </template>
 
 <style scoped>
 .weather-card {
-  background: #fff;
-  border: 1px solid #dee2e6;
-  padding: 12px;
   margin-bottom: 10px;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
-  position: relative;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+  --el-card-padding: 16px;
 }
-.badge {
-  display: inline-block;
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  color: #fff;
+
+.weather-card:hover {
+  border-color: var(--el-color-primary-light-5);
+  transform: translateY(-2px);
 }
-.hot {
-  background-color: #ff7675;
+
+.weather-content {
+  display: grid;
+  gap: 16px;
 }
-.cool {
-  background-color: #74b9ff;
+
+.weather-summary,
+.weather-footer,
+.weather-actions {
+  display: flex;
+  align-items: center;
 }
-.btn-detail {
-  position: absolute;
-  right: 12px;
-  top: 15px;
-  padding: 6px 10px;
-  cursor: pointer;
+
+.weather-summary,
+.weather-footer {
+  justify-content: space-between;
+  gap: 12px;
 }
-.btn-favorite {
-  position: absolute;
-  top: 52px;
-  right: 12px;
-  padding: 6px 10px;
-  cursor: pointer;
+
+.city-name,
+.weather-status {
+  margin: 0;
+}
+
+.city-name {
+  color: #303133;
+  font-size: 18px;
+}
+
+.weather-status {
+  margin: 0;
+  color: #909399;
+  font-size: 14px;
+}
+
+.weather-condition {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+}
+
+.weather-icon {
+  display: block;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.temperature {
+  color: var(--el-color-primary);
+  font-size: 24px;
+}
+
+.weather-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 520px) {
+  .weather-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .weather-actions {
+    align-self: stretch;
+  }
 }
 </style>

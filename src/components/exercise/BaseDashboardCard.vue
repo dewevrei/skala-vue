@@ -1,15 +1,14 @@
 <template>
-  <div class="base-dashboard-card">
+  <el-card class="base-dashboard-card" shadow="hover">
     <slot></slot>
-  </div>
+  </el-card>
 </template>
 
 <style scoped>
 .base-dashboard-card {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
   margin-bottom: 15px;
-  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  --el-card-border-color: #e4e7ed;
+  --el-card-padding: 18px;
 }
 </style>
